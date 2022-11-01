@@ -12,22 +12,23 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using Unity;
-using wpfProjectNewsReader.View;
+using wpfProjectNewsReader.ViewModel;
 
-namespace wpfProjectNewsReader
+namespace wpfProjectNewsReader.View
 {
     /// <summary>
-    /// Interaction logic for MainWindow.xaml
+    /// Interaction logic for LoginView.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class LoginView : UserControl
     {
-        public MainWindow()
+        ILoginViewModel viewModel;
+        public LoginView(ILoginViewModel iLoginViewModel)
         {
             InitializeComponent();
-            ((App)App.Current).CCRef = this.ccPanel;
 
-            ((App)App.Current).ChangeUserControl(App.container.Resolve<LoginView>());
+            // Set viewmodel received from DI as binding context
+            viewModel = iLoginViewModel;
+            this.DataContext = viewModel;
         }
     }
 }
