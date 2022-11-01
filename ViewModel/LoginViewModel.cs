@@ -40,6 +40,7 @@ namespace wpfProjectNewsReader.ViewModel
         #region Fields
         private string username = "";
         private string password = "";
+        private string connectionLabel = "";
 
         public string Username
         {
@@ -60,6 +61,16 @@ namespace wpfProjectNewsReader.ViewModel
                 OnPropertyChanged();
             }
         }
+
+        public string ConnectionLabel 
+        { 
+            get => connectionLabel; 
+            set
+            {
+                connectionLabel = value;
+                OnPropertyChanged();
+            }
+        }
         #endregion
 
         public LoginViewModel()
@@ -72,13 +83,14 @@ namespace wpfProjectNewsReader.ViewModel
 
         public async void LoginAttempt()
         {
+            ConnectionLabel = "Connecting...";
             // Open the connection
             InternalResponse ir = await client.OpenConnectionAsync();
             bool res = ir.Response.ContainsKey(true);
 
             if (!res)
             {
-                MessageBox.Show(ir.Response[false]);
+                ConnectionLabel = ir.Response[false];
                 return;
             }
 
@@ -88,7 +100,7 @@ namespace wpfProjectNewsReader.ViewModel
 
             if (!res)
             {
-                MessageBox.Show(ir.Response[false]);
+                ConnectionLabel = ir.Response[false];
                 return;
             }
 

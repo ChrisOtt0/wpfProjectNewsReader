@@ -147,6 +147,17 @@
                     HorizontalContentAlignment="Center"
                     Command="{Binding LoginCommand}"/>
             </Grid>
+
+            <StackPanel
+                Orientation="Horizontal"
+                Grid.Row="6">
+                <Label
+                    Content="{Binding ConnectionLabel}"
+                    VerticalAlignment="Top"
+                    HorizontalAlignment="Right"
+                    Margin="320, 5, 20, 10"
+                    Foreground="#f0f1f4"/>
+            </StackPanel>
         </Grid>
     </Grid>
 </UserControl>
