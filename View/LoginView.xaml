@@ -120,7 +120,8 @@
                     Margin="20, 0, 0, 0"
                     VerticalContentAlignment="Center"
                     DockPanel.Dock="Left"/>
-                <TextBox
+                <PasswordBox
+                    Name="password"
                     Width="240"
                     FontSize="20"
                     Background="#f0f1f4"
@@ -130,7 +131,7 @@
                     HorizontalContentAlignment="Left"
                     Padding="2"
                     DockPanel.Dock="Right"
-                    Text="{Binding Password}"/>
+                    FontFamily="Password"/>
             </DockPanel>
 
             <Grid
@@ -145,19 +146,20 @@
                     Foreground="#f0f1f4"
                     VerticalContentAlignment="Center"
                     HorizontalContentAlignment="Center"
-                    Command="{Binding LoginCommand}"/>
+                    Command="{Binding LoginCommand}"
+                    CommandParameter="{Binding ElementName=password}"/>
             </Grid>
 
-            <StackPanel
-                Orientation="Horizontal"
+            <DockPanel
                 Grid.Row="6">
                 <Label
+                    DockPanel.Dock="Right"
                     Content="{Binding ConnectionLabel}"
                     VerticalAlignment="Top"
                     HorizontalAlignment="Right"
-                    Margin="320, 5, 20, 10"
+                    Margin="20, 5, 20, 10"
                     Foreground="#f0f1f4"/>
-            </StackPanel>
+            </DockPanel>
         </Grid>
     </Grid>
 </UserControl>

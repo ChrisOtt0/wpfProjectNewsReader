@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 using Unity;
 using wpfProjectNewsReader.Model;
 using wpfProjectNewsReader.Tools;
@@ -39,7 +40,6 @@ namespace wpfProjectNewsReader.ViewModel
 
         #region Fields
         private string username = "";
-        private string password = "";
         private string connectionLabel = "";
 
         public string Username
@@ -48,16 +48,6 @@ namespace wpfProjectNewsReader.ViewModel
             set
             {
                 username = value;
-                OnPropertyChanged();
-            }
-        }
-
-        public string Password
-        {
-            get => password;
-            set
-            {
-                password = value;
                 OnPropertyChanged();
             }
         }
@@ -81,7 +71,7 @@ namespace wpfProjectNewsReader.ViewModel
         #region Commands
         public AddCommand LoginCommand { get; set; }
 
-        public async void LoginAttempt()
+        public async void LoginAttempt(object parameter)
         {
             ConnectionLabel = "Connecting...";
             // Open the connection
@@ -95,7 +85,7 @@ namespace wpfProjectNewsReader.ViewModel
             }
 
             // Login with credentials
-            ir = await client.LoginAsync(Username, Password);
+            ir = await client.LoginAsync(Username, (parameter as PasswordBox).Password);
             res = ir.Response.ContainsKey(true);
 
             if (!res)
