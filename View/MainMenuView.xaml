@@ -152,6 +152,7 @@
                             VerticalContentAlignment="Center"
                             Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"/>
                         <ListBox
+                            x:Name="FilteredListBox"
                             Grid.Row="1"
                             Margin="10"
                             ItemsSource="{Binding FilteredGroups}"/>
@@ -180,7 +181,9 @@
                             <Button
                                 Content="Add to Favorites"
                                 Margin="50, 10, 20, 10"
-                                Width="200"/>
+                                Width="200"
+                                Command="{Binding AddToFavorites}"
+                                CommandParameter="{Binding ElementName=FilteredListBox}"/>
                             <Button
                                 Content="Remove from Favorites"
                                 Margin="20, 10, 50, 10"

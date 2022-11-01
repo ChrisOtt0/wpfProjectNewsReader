@@ -15,7 +15,7 @@ namespace wpfProjectNewsReader.ViewModel
     public class LoginViewModel : Bindable, ILoginViewModel
     {
         #region Nntp Client related stuff
-        private NntpClientSingleton client = NntpClientSingleton.GetInstance();
+        private NntpClientSingleton client;
 
         public string ServerName
         {
@@ -66,6 +66,7 @@ namespace wpfProjectNewsReader.ViewModel
         public LoginViewModel()
         {
             LoginCommand = new AddCommand(LoginAttempt);
+            client = NntpClientSingleton.GetInstance();
         }
 
         #region Commands

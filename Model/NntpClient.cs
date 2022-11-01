@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -154,7 +155,7 @@ namespace wpfProjectNewsReader.Model
             stream.Flush();
         }
 
-        public async Task<ServerResponse> ReceiveAsync()
+        public async Task<ServerResponse> ReceiveAsync(bool multiline = false)
         {
             var line = await this.reader.ReadLineAsync();
 
@@ -173,7 +174,20 @@ namespace wpfProjectNewsReader.Model
 
             string message = line.Substring(4);
 
-            return new ServerResponse(code, message);
+            return multiline
+                ? new ServerResponse(code, message, new ReadOnlyCollection<string>(reader.ReadAllLines().ToList())) : new ServerResponse(code, message);
+        }
+
+        public async Task<InternalResponse> GetGroupListAsync()
+        {
+            await SendAsync("LIST\r\n");
+            ServerResponse sr = await ReceiveAsync(true);
+
+
+            if (sr.Code != 215) return new InternalResponse(false, sr.Message);
+            ReadOnlyCollection<string> list = sr.Lines;
+
+            return new InternalResponse(true, "", list);
         }
     }
 }
