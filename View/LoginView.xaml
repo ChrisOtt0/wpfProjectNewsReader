@@ -30,6 +30,7 @@
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
 
             <Grid
@@ -55,15 +56,39 @@
                     FontSize="20"
                     Background="#f0f1f4"
                     Foreground="#0b0b0f"
-                    Margin="20, 15, 20, 15"
+                    Margin="20, 10, 20, 10"
                     VerticalContentAlignment="Center"
                     HorizontalContentAlignment="Left"
                     Padding="2"
-                    DockPanel.Dock="Right"/>
+                    DockPanel.Dock="Right"
+                    Text="{Binding ServerName}"/>
             </DockPanel>
 
             <DockPanel
                 Grid.Row="2">
+                <Label 
+                    Content="Server port:"
+                    FontSize="20"
+                    FontWeight="Bold"
+                    Foreground="#c4c7d4"
+                    Margin="20, 0, 0, 0"
+                    VerticalContentAlignment="Center"
+                    DockPanel.Dock="Left"/>
+                <TextBox
+                    Width="240"
+                    FontSize="20"
+                    Background="#f0f1f4"
+                    Foreground="#0b0b0f"
+                    Margin="20, 10, 10, 10"
+                    VerticalContentAlignment="Center"
+                    HorizontalContentAlignment="Left"
+                    Padding="2"
+                    DockPanel.Dock="Right"
+                    Text="{Binding ServerPort}"/>
+            </DockPanel>
+
+            <DockPanel
+                Grid.Row="3">
                 <Label 
                     Content="Username:"
                     FontSize="20"
@@ -77,15 +102,16 @@
                     FontSize="20"
                     Background="#f0f1f4"
                     Foreground="#0b0b0f"
-                    Margin="20, 15, 0, 15"
+                    Margin="20, 10, 0, 10"
                     VerticalContentAlignment="Center"
                     HorizontalContentAlignment="Left"
                     Padding="2"
-                    DockPanel.Dock="Right"/>
+                    DockPanel.Dock="Right"
+                    Text="{Binding Username}"/>
             </DockPanel>
 
             <DockPanel
-                Grid.Row="3">
+                Grid.Row="4">
                 <Label 
                     Content="Password:"
                     FontSize="20"
@@ -99,17 +125,18 @@
                     FontSize="20"
                     Background="#f0f1f4"
                     Foreground="#0b0b0f"
-                    Margin="20, 15, 0, 15"
+                    Margin="20, 10, 0, 10"
                     VerticalContentAlignment="Center"
                     HorizontalContentAlignment="Left"
                     Padding="2"
-                    DockPanel.Dock="Right"/>
+                    DockPanel.Dock="Right"
+                    Text="{Binding Password}"/>
             </DockPanel>
 
             <Grid
-                Grid.Row="4">
+                Grid.Row="5">
                 <Button
-                    Margin="170, 15, 20, 15"
+                    Margin="170, 10, 20, 10"
                     Width="240"
                     Content="Login"
                     FontSize="20"
