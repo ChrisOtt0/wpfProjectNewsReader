@@ -17,7 +17,7 @@ namespace wpfProjectNewsReader.Model
         #region Fields
         private static NntpClientSingleton? instance = null;
         private string serverName = "";
-        private int serverPort;
+        private int serverPort = 119;
         TcpClient? socket = null;
         Stream stream = null;
         NntpStreamReader? reader = null;
@@ -92,8 +92,8 @@ namespace wpfProjectNewsReader.Model
                         return new InternalResponse(false, "Service unavailable.");
 
                     default:
-                        Trace.WriteLine($"\nUnexpected response code {sr.Code}. Message: {sr.Message}");
-                        return new InternalResponse(false, $"Unexpected response code {sr.Code}. Message: {sr.Message}");
+                        Trace.WriteLine($"\n Error {sr.Code}: {sr.Message}");
+                        return new InternalResponse(false, $"Error {sr.Code}: {sr.Message}");
 
                 }
 
@@ -132,7 +132,7 @@ namespace wpfProjectNewsReader.Model
                             return new InternalResponse(false, srPass.Message);
 
                         default:
-                            return new InternalResponse(false, $"Unknown response code {srPass.Code}. Message: {srPass.Message}");
+                            return new InternalResponse(false, $"Error {srPass.Code}: {srPass.Message}");
                     }
                     break;
 
@@ -141,7 +141,7 @@ namespace wpfProjectNewsReader.Model
                 case 502:
                     return new InternalResponse(false, sr.Message);
                 default:
-                    return new InternalResponse(false, $"Unknown response code {sr.Code}. Message: {sr.Message}");
+                    return new InternalResponse(false, $"Error {sr.Code}: {sr.Message}");
             }
 
             return new InternalResponse(true, "");
