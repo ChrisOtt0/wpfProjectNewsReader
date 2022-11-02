@@ -57,17 +57,11 @@
                                     Margin="25, 5, 25, 20"
                                     VerticalAlignment="Stretch"
                                     ItemsSource="{Binding Favorites}">
-                            <ListBox.ItemTemplate>
-                                <DataTemplate>
-                                    <TextBlock Text="{Binding .}">
-                                        <TextBlock.InputBindings>
-                                            <MouseBinding MouseAction="LeftClick"
-                                                          Command="{Binding SelectGroup}"
-                                                          CommandParameter="{Binding ElementName=FavoriteListBox}"/>
-                                        </TextBlock.InputBindings>
-                                    </TextBlock>
-                                </DataTemplate>
-                            </ListBox.ItemTemplate>
+                            <ListBox.ItemContainerStyle>
+                                <Style TargetType="{x:Type ListBoxItem}">
+                                    <EventSetter Event="MouseDoubleClick" Handler="ListBoxItem_MouseDoubleClick"/>
+                                </Style>
+                            </ListBox.ItemContainerStyle>
                         </ListBox>
                     </DockPanel>
 
@@ -81,18 +75,18 @@
                         <DockPanel
                                     Grid.Row="0">
                             <ComboBox
+                                VerticalContentAlignment="Center"
                                         Width="800"
                                         Margin="25, 15, 15, 15"
-                                        ItemsSource="{Binding FilteredArticles}"
-                                        DockPanel.Dock="Left"/>
-                            <Button
-                                        Content="Open article"
-                                        Margin="15"
-                                        Width="150"
-                                        DockPanel.Dock="Right"/>
+                                        ItemsSource="{Binding Headlines}"
+                                        DockPanel.Dock="Left"
+                                SelectedItem="{Binding CurrentArticleNumber}">
+                            </ComboBox>
                         </DockPanel>
 
                         <TextBox
+                            Name="ArticleContainer"
+                            Text="{Binding Article}"
                                     Grid.Row="1"
                                     Margin="25, 10"/>
                     </Grid>

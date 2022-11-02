@@ -9,6 +9,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Shapes;
 using wpfProjectNewsReader.Tools;
 
 namespace wpfProjectNewsReader.Model
@@ -23,6 +24,8 @@ namespace wpfProjectNewsReader.Model
         Stream stream = null;
         NntpStreamReader? reader = null;
         private bool canPost = false;
+        private string currentGroup = "";
+
 
         public string ServerName
         {
@@ -188,6 +191,34 @@ namespace wpfProjectNewsReader.Model
             ReadOnlyCollection<string> list = sr.Lines.Select(line => line.Split(' ')).Select(values => values[0]).ToList().AsReadOnly();
 
             return new InternalResponse(true, "", list);
+        }
+
+        public async Task<InternalResponse> GetHeadlinesAsync(string group)
+        {
+            currentGroup = group;
+            await SendAsync("GROUP " + group + "\r\n");
+            ServerResponse sr = await ReceiveAsync();
+            if (sr.Code != 211)
+                return new InternalResponse(false, sr.Message);
+
+            GroupResponse gr = new GroupResponse(sr.Message);
+            List<int> articleNumbers = new List<int>();
+            
+            for (int i = gr.First; i < gr.Last; i++)
+            {
+                articleNumbers.Add(i);
+            }
+            articleNumbers.Sort();
+
+            return new InternalResponse(true, "", articleNumbers);
+        }
+
+        public async Task<InternalResponse> GetBodyAsync(int? articleNumber)
+        {
+            await SendAsync("BODY " + articleNumber + "\r\n");
+            ServerResponse sr = await ReceiveAsync(true);
+            if (sr.Code == 222) return new InternalResponse(true, sr.Message, sr.Lines);
+            return new InternalResponse(false, sr.Message);
         }
     }
 }

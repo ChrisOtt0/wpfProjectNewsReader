@@ -21,7 +21,12 @@ namespace wpfProjectNewsReader.ViewModel
         private NntpClientSingleton client;
         private ObservableCollection<string>? allGroups;
         private ObservableCollection<string>? favorites = new ObservableCollection<string>();
+        private ObservableCollection<int>? headlines = new ObservableCollection<int>();
         private string searchText = "";
+        private int? currentArticleNumber = null;
+        private string? article = null;
+        private SessionSingleton session = SessionSingleton.GetInstance();
+        private FavoriteManager favMan = null;
 
         public ObservableCollection<string>? AllGroups
         {
@@ -49,7 +54,7 @@ namespace wpfProjectNewsReader.ViewModel
             get => favorites;
             set
             {
-                Favorites = value;
+                favorites = value;
                 OnPropertyChanged();
             }
         }
@@ -58,9 +63,29 @@ namespace wpfProjectNewsReader.ViewModel
         {
             get
             {
-                if (SearchText == null) return AllGroups;
+                if (SearchText == null || SearchText == "") return AllGroups;
 
                 return new ObservableCollection<string>(AllGroups.Where(x => x.ToUpper().StartsWith(SearchText.ToUpper())));
+            }
+        }
+
+        public ObservableCollection<int>? Headlines
+        {
+            get => headlines;
+            set
+            {
+                headlines = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public string Article
+        {
+            get => article;
+            set
+            {
+                article = value;
+                OnPropertyChanged();
             }
         }
         #endregion
@@ -72,9 +97,21 @@ namespace wpfProjectNewsReader.ViewModel
             AddToFavorites = new AddCommand(AddSelectedToFavorites);
             RemoveFromFavorites = new AddCommand(RemoveSelectedFromFavorites);
             SelectGroup = new AddCommand(SelectGroupAndGetHeadLines);
-            DownloadGroups = new AddCommand(DownloadAllGroupsAsync);
+            DownloadGroups = new AddCommand(DownloadAllGroups);
+            favMan = new FavoriteManager(session.Username);
+            favorites = new ObservableCollection<string>(favMan.LoadFavorites());
             Initialize();
-            Thread.Sleep(5000);
+        }
+
+        public int? CurrentArticleNumber
+        {
+            get => currentArticleNumber;
+            set
+            {
+                currentArticleNumber = value;
+                OnPropertyChanged();
+                GetArticleFromNumberAsync();
+            }
         }
 
         public async Task Initialize()
@@ -112,6 +149,8 @@ namespace wpfProjectNewsReader.ViewModel
             }
 
             filteredBox.UnselectAll();
+
+            favMan.SaveFavorites(favorites);
         }
 
         private void RemoveSelectedFromFavorites(object parameter)
@@ -127,23 +166,34 @@ namespace wpfProjectNewsReader.ViewModel
             }
 
             favBox.UnselectAll();
+
+            favMan.SaveFavorites(favorites);
         }
 
-        private void SelectGroupAndGetHeadLines()
+        private void SelectGroupAndGetHeadLines(object parameter)
         {
-
+            SelGroAndGetHeaAsync(parameter);
         }
 
-        private async void DownloadAllGroupsAsync()
+        private async void SelGroAndGetHeaAsync(object parameter)
+        {
+            string selectedGroup = (string)parameter;
+            InternalResponse ir = await client.GetHeadlinesAsync(selectedGroup);
+            if (ir.Response.ContainsKey(false)) { return; }
+
+            Headlines = new ObservableCollection<int>((List<int>)ir.Payload);
+        }
+
+        private void DownloadAllGroups()
         {
             FileAdapter fileAdapter = new TxtFile();
             string path = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "\\Documents\\NewsReader\\Groups\\AllGroups.txt";
 
-            string text = await AllGroupsToStringAsync();
+            string text = AllGroupsToString();
             fileAdapter.WriteTextToFile(path, text);
         }
 
-        private async Task<string> AllGroupsToStringAsync()
+        private string AllGroupsToString()
         {
             string text = "";
             foreach (string s in AllGroups)
@@ -152,6 +202,19 @@ namespace wpfProjectNewsReader.ViewModel
             }
 
             return text;
+        }
+
+        private async void GetArticleFromNumberAsync()
+        {
+            InternalResponse ir = await client.GetBodyAsync(CurrentArticleNumber);
+
+            string toBePosted = "";
+            if (ir.Payload == null) { Article = ir.Response[false]; return; }
+            foreach (string s in ((ReadOnlyCollection<string>)ir.Payload))
+            {
+                toBePosted += s + "\n";
+            }
+            Article = toBePosted;
         }
     }
 }
