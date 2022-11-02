@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -71,7 +72,7 @@ namespace wpfProjectNewsReader.ViewModel
             AddToFavorites = new AddCommand(AddSelectedToFavorites);
             RemoveFromFavorites = new AddCommand(RemoveSelectedFromFavorites);
             SelectGroup = new AddCommand(SelectGroupAndGetHeadLines);
-            DownloadGroups = new AddCommand(DownloadAllGroups);
+            DownloadGroups = new AddCommand(DownloadAllGroupsAsync);
             Initialize();
             Thread.Sleep(5000);
         }
@@ -133,9 +134,24 @@ namespace wpfProjectNewsReader.ViewModel
 
         }
 
-        private void DownloadAllGroups()
+        private async void DownloadAllGroupsAsync()
         {
+            FileAdapter fileAdapter = new TxtFile();
+            string path = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "\\Documents\\NewsReader\\Groups\\AllGroups.txt";
 
+            string text = await AllGroupsToStringAsync();
+            fileAdapter.WriteTextToFile(path, text);
+        }
+
+        private async Task<string> AllGroupsToStringAsync()
+        {
+            string text = "";
+            foreach (string s in AllGroups)
+            {
+                text += s + "\n";
+            }
+
+            return text;
         }
     }
 }
