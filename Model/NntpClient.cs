@@ -185,7 +185,7 @@ namespace wpfProjectNewsReader.Model
 
 
             if (sr.Code != 215) return new InternalResponse(false, sr.Message);
-            ReadOnlyCollection<string> list = sr.Lines;
+            ReadOnlyCollection<string> list = sr.Lines.Select(line => line.Split(' ')).Select(values => values[0]).ToList().AsReadOnly();
 
             return new InternalResponse(true, "", list);
         }

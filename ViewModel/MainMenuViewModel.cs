@@ -4,9 +4,11 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using wpfProjectNewsReader.Model;
 using wpfProjectNewsReader.Tools;
 
@@ -67,7 +69,11 @@ namespace wpfProjectNewsReader.ViewModel
         {
             client = NntpClientSingleton.GetInstance();
             AddToFavorites = new AddCommand(AddSelectedToFavorites);
+            RemoveFromFavorites = new AddCommand(RemoveSelectedFromFavorites);
+            SelectGroup = new AddCommand(SelectGroupAndGetHeadLines);
+            DownloadGroups = new AddCommand(DownloadAllGroups);
             Initialize();
+            Thread.Sleep(5000);
         }
 
         public async Task Initialize()
@@ -79,6 +85,9 @@ namespace wpfProjectNewsReader.ViewModel
         #endregion
 
         public AddCommand AddToFavorites { get; set; }
+        public AddCommand RemoveFromFavorites { get; set; }
+        public AddCommand SelectGroup { get; set; }
+        public AddCommand DownloadGroups { get; set; }
 
         private void AddSelectedToFavorites(object parameter)
         {
@@ -87,6 +96,46 @@ namespace wpfProjectNewsReader.ViewModel
             {
                 Favorites.Add((string)o);
             }
+
+            for (int i = 0; i < Favorites.Count; i++)
+            {
+                for (int j = 0; j < Favorites.Count; j++)
+                {
+                    if (i == j) continue;
+                    if (Favorites[i] == Favorites[j])
+                    {
+                        Favorites.Remove(Favorites[j]);
+                        j--;
+                    }
+                }
+            }
+
+            filteredBox.UnselectAll();
+        }
+
+        private void RemoveSelectedFromFavorites(object parameter)
+        {
+            ListBox favBox = (ListBox)parameter;
+            for (int i = 0; i < Favorites.Count; i++)
+            {
+                if (favBox.SelectedItems.Contains(Favorites[i]))
+                {
+                    Favorites.Remove(Favorites[i]);
+                    i--;
+                }
+            }
+
+            favBox.UnselectAll();
+        }
+
+        private void SelectGroupAndGetHeadLines()
+        {
+
+        }
+
+        private void DownloadAllGroups()
+        {
+
         }
     }
 }
