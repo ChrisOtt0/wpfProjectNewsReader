@@ -231,5 +231,28 @@ namespace wpfProjectNewsReader.Model
             if (sr.Code == 222) return new InternalResponse(true, sr.Message, sr.Lines);
             return new InternalResponse(false, sr.Message);
         }
+
+        public async Task<InternalResponse> GetArticleAsync(int? articleNumber)
+        {
+            await SendAsync("ARTICLE " + articleNumber + "\r\n");
+            ServerResponse sr = await ReceiveAsync(true);
+            if (sr.Code == 220) return new InternalResponse(true, sr.Message, sr.Lines);
+            return new InternalResponse(false, sr.Message);
+        }
+
+        public async Task<InternalResponse> PostAsync(string message)
+        {
+            await SendAsync("POST\r\n");
+            ServerResponse sr = await ReceiveAsync();
+            if (sr.Code != 340)
+                return new InternalResponse(false, sr.Message);
+
+            await SendAsync(message);
+            sr = await ReceiveAsync();
+
+            return sr.Code == 240 ?
+                new InternalResponse(true, sr.Message) :
+                new InternalResponse(false, sr.Message);
+        }
     }
 }

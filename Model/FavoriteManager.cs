@@ -46,6 +46,7 @@ namespace wpfProjectNewsReader.Model
 
             foreach (string line in lines)
             {
+                if (line == "" || line == " ") continue;
                 if (line != null) yield return line;
             }
         }

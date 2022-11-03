@@ -50,7 +50,7 @@ namespace wpfProjectNewsReader
 
             if (!Directory.Exists(groupsDir)) { Directory.CreateDirectory(groupsDir); }
 
-            string userDir = configDir + "\\USers";
+            string userDir = configDir + "\\Session";
 
             if (!Directory.Exists(userDir)) { Directory.CreateDirectory(userDir); }
         }

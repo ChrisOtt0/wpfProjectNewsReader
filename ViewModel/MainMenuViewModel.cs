@@ -30,6 +30,7 @@ namespace wpfProjectNewsReader.ViewModel
         private string post = "";
         private string from = "";
         private string subject = "";
+        private string currentGroup = "";
 
         public ObservableCollection<string>? AllGroups
         {
@@ -118,6 +119,16 @@ namespace wpfProjectNewsReader.ViewModel
             set
             {
                 subject = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public string CurrentGroup
+        {
+            get => currentGroup;
+            set
+            {
+                currentGroup = value;
                 OnPropertyChanged();
             }
         }
@@ -214,15 +225,15 @@ namespace wpfProjectNewsReader.ViewModel
 
         private async void SelectGroupForPost(object parameter)
         {
-            string selectedGroup = (string)parameter;
-            InternalResponse ir = await client.SelectGroup(selectedGroup);
+            currentGroup = (string)parameter;
+            InternalResponse ir = await client.SelectGroup(currentGroup);
             if (ir.Response.ContainsKey(false)) { return; }
         }
 
         private async void SelGroAndGetHeaAsync(object parameter)
         {
-            string selectedGroup = (string)parameter;
-            InternalResponse ir = await client.GetHeadlinesAsync(selectedGroup);
+            currentGroup = (string)parameter;
+            InternalResponse ir = await client.GetHeadlinesAsync(currentGroup);
             if (ir.Response.ContainsKey(false)) { return; }
 
             Headlines = new ObservableCollection<int>((List<int>)ir.Payload);
@@ -250,7 +261,7 @@ namespace wpfProjectNewsReader.ViewModel
 
         private async void GetArticleFromNumberAsync()
         {
-            InternalResponse ir = await client.GetBodyAsync(CurrentArticleNumber);
+            InternalResponse ir = await client.GetArticleAsync(CurrentArticleNumber);
 
             string toBePosted = "";
             if (ir.Payload == null) { Article = ir.Response[false]; return; }
@@ -263,7 +274,11 @@ namespace wpfProjectNewsReader.ViewModel
 
         private async void PostArticleToGroup()
         {
+            string toBePosted = StringOperations.ConvertTextToArticle(From, currentGroup, Subject, Post);
+            InternalResponse ir = await client.PostAsync(toBePosted);
 
+            if (ir.Response.ContainsKey(false)) { MessageBox.Show(ir.Response[false]); return; }
+            MessageBox.Show($"Article posted in {currentGroup}");
         }
     }
 }
