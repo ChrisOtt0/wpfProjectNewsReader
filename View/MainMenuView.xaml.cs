@@ -31,5 +31,10 @@ namespace wpfProjectNewsReader.View
             viewModel = iMainMenuViewModel;
             this.DataContext = viewModel;
         }
+
+        private void ListBoxItem_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            ((MainMenuViewModel)DataContext).SelectGroup.Execute(((ListBoxItem)sender).Content);
+        }
     }
 }

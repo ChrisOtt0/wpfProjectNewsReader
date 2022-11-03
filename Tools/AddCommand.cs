@@ -41,5 +41,6 @@ namespace wpfProjectNewsReader.Tools
         {
             this.actionToInvoke = actionToInvoke;
         }
+
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -41,6 +42,7 @@ namespace wpfProjectNewsReader.ViewModel
         #region Fields
         private string username = "";
         private string connectionLabel = "";
+        private SessionSingleton session = SessionSingleton.GetInstance();
 
         public string Username
         {
@@ -49,6 +51,7 @@ namespace wpfProjectNewsReader.ViewModel
             {
                 username = value;
                 OnPropertyChanged();
+                session.Username = username;
             }
         }
 
@@ -99,7 +102,5 @@ namespace wpfProjectNewsReader.ViewModel
             ((App)App.Current).ChangeUserControl(App.container.Resolve<MainMenuView>());
         }
         #endregion
-
-
     }
 }
