@@ -42,22 +42,28 @@
                         <ColumnDefinition Width="3*"/>
                     </Grid.ColumnDefinitions>
 
-                    <StackPanel
-                                Grid.Row="0"
-                                Orientation="Vertical">
+                    <DockPanel
+                                Grid.Row="0">
                         <Label 
                                     Content="Favorites"
                                     FontSize="28"
                                     VerticalAlignment="Center"
                                     HorizontalAlignment="Center"
-                                    Margin="15, 5"/>
+                                    Margin="15, 5"
+                            DockPanel.Dock="Top"/>
                         <ListBox
+                            Name="FavoriteListBox"
+                            DockPanel.Dock="Bottom"
                                     Margin="25, 5, 25, 20"
-                                    Height="25"
                                     VerticalAlignment="Stretch"
                                     ItemsSource="{Binding Favorites}">
+                            <ListBox.ItemContainerStyle>
+                                <Style TargetType="{x:Type ListBoxItem}">
+                                    <EventSetter Event="MouseDoubleClick" Handler="ListBoxItem_MouseDoubleClick"/>
+                                </Style>
+                            </ListBox.ItemContainerStyle>
                         </ListBox>
-                    </StackPanel>
+                    </DockPanel>
 
                     <Grid
                                 Grid.Column="2">
@@ -69,18 +75,18 @@
                         <DockPanel
                                     Grid.Row="0">
                             <ComboBox
+                                VerticalContentAlignment="Center"
                                         Width="800"
                                         Margin="25, 15, 15, 15"
-                                        ItemsSource="{Binding FilteredArticles}"
-                                        DockPanel.Dock="Left"/>
-                            <Button
-                                        Content="Open article"
-                                        Margin="15"
-                                        Width="150"
-                                        DockPanel.Dock="Right"/>
+                                        ItemsSource="{Binding Headlines}"
+                                        DockPanel.Dock="Left"
+                                SelectedItem="{Binding CurrentArticleNumber}">
+                            </ComboBox>
                         </DockPanel>
 
                         <TextBox
+                            Name="ArticleContainer"
+                            Text="{Binding Article}"
                                     Grid.Row="1"
                                     Margin="25, 10"/>
                     </Grid>
@@ -101,6 +107,10 @@
                             <RowDefinition Height="*"/>
                         </Grid.RowDefinitions>
 
+                        <DockPanel
+                            Grid.Column="1">
+                            
+                        </DockPanel>
                         <Label
                                     Content="Favorites"
                                     FontSize="28"
@@ -110,10 +120,9 @@
 
                         <ListBox
                                     Grid.Row="1"
-                                    Margin="25,5,25,0"
-                                    Height="25"
-                                    VerticalAlignment="Top"
+                                    Margin="25,5,25,5"
                                     ItemsSource="{Binding Favorites}" Grid.ColumnSpan="2">
+                            
                         </ListBox>
 
                         <Button
@@ -152,9 +161,24 @@
                             VerticalContentAlignment="Center"
                             Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"/>
                         <ListBox
+                            x:Name="FilteredListBox"
+                            SelectionMode="Multiple"
+                            
                             Grid.Row="1"
                             Margin="10"
-                            ItemsSource="{Binding FilteredGroups}"/>
+                            ItemsSource="{Binding FilteredGroups}">
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding .}">
+                                        <TextBlock.InputBindings>
+                                            <MouseBinding MouseAction="LeftDoubleClick"
+                                                          Command="{Binding DeselectItems}"
+                                                          CommandParameter="{Binding ElementName=FilteredListBox}"/>
+                                        </TextBlock.InputBindings>
+                                    </TextBlock>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
                     </Grid>
 
                     <Grid
@@ -171,6 +195,8 @@
                             VerticalAlignment="Bottom"
                             HorizontalAlignment="Center"/>
                         <ListBox
+                            SelectionMode="Multiple"
+                            Name="FavListBox"
                             Grid.Row="1"
                             Margin="20"
                             ItemsSource="{Binding Favorites}"/>
@@ -178,13 +204,22 @@
                             Grid.Row="2"
                             Orientation="Horizontal">
                             <Button
+                                Content="Download"
+                                Margin="0, 0, 5, 15"
+                                Width="125"
+                                Command="{Binding DownloadGroups}"/>
+                            <Button
                                 Content="Add to Favorites"
-                                Margin="50, 10, 20, 10"
-                                Width="200"/>
+                                Margin="5, 0, 5, 15"
+                                Width="180"
+                                Command="{Binding AddToFavorites}"
+                                CommandParameter="{Binding ElementName=FilteredListBox}"/>
                             <Button
                                 Content="Remove from Favorites"
-                                Margin="20, 10, 50, 10"
-                                Width="250"/>
+                                Margin="5, 0, 5, 15"
+                                Width="250"
+                                Command="{Binding RemoveFromFavorites}"
+                                CommandParameter="{Binding ElementName=FavListBox}"/>
                         </StackPanel>
                     </Grid>
                 </Grid>
