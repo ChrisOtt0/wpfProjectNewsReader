@@ -193,6 +193,17 @@ namespace wpfProjectNewsReader.Model
             return new InternalResponse(true, "", list);
         }
 
+        public async Task<InternalResponse> SelectGroup(string group)
+        {
+            currentGroup = group;
+            await SendAsync("GROUP " + group + "\r\n");
+            ServerResponse sr = await ReceiveAsync();
+            if (sr.Code != 211)
+                return new InternalResponse(false, sr.Message);
+
+            return new InternalResponse(true, sr.Message);
+        }
+
         public async Task<InternalResponse> GetHeadlinesAsync(string group)
         {
             currentGroup = group;

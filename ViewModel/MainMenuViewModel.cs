@@ -27,6 +27,9 @@ namespace wpfProjectNewsReader.ViewModel
         private string? article = null;
         private SessionSingleton session = SessionSingleton.GetInstance();
         private FavoriteManager favMan = null;
+        private string post = "";
+        private string from = "";
+        private string subject = "";
 
         public ObservableCollection<string>? AllGroups
         {
@@ -88,6 +91,36 @@ namespace wpfProjectNewsReader.ViewModel
                 OnPropertyChanged();
             }
         }
+
+        public string Post
+        {
+            get => post;
+            set
+            {
+                post = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public string From
+        {
+            get => from;
+            set
+            {
+                from = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public string Subject
+        {
+            get => subject;
+            set
+            {
+                subject = value;
+                OnPropertyChanged();
+            }
+        }
         #endregion
 
         #region Constructor
@@ -96,8 +129,10 @@ namespace wpfProjectNewsReader.ViewModel
             client = NntpClientSingleton.GetInstance();
             AddToFavorites = new AddCommand(AddSelectedToFavorites);
             RemoveFromFavorites = new AddCommand(RemoveSelectedFromFavorites);
-            SelectGroup = new AddCommand(SelectGroupAndGetHeadLines);
+            SelectGroup = new AddCommand(SelectGroupForPost);
             DownloadGroups = new AddCommand(DownloadAllGroups);
+            GetHeadlines = new AddCommand(SelectGroupAndGetHeadLines);
+            PostArticle = new AddCommand(PostArticleToGroup);
             favMan = new FavoriteManager(session.Username);
             favorites = new ObservableCollection<string>(favMan.LoadFavorites());
             Initialize();
@@ -126,6 +161,8 @@ namespace wpfProjectNewsReader.ViewModel
         public AddCommand RemoveFromFavorites { get; set; }
         public AddCommand SelectGroup { get; set; }
         public AddCommand DownloadGroups { get; set; }
+        public AddCommand GetHeadlines { get; set; }
+        public AddCommand PostArticle { get; set; } 
 
         private void AddSelectedToFavorites(object parameter)
         {
@@ -175,6 +212,13 @@ namespace wpfProjectNewsReader.ViewModel
             SelGroAndGetHeaAsync(parameter);
         }
 
+        private async void SelectGroupForPost(object parameter)
+        {
+            string selectedGroup = (string)parameter;
+            InternalResponse ir = await client.SelectGroup(selectedGroup);
+            if (ir.Response.ContainsKey(false)) { return; }
+        }
+
         private async void SelGroAndGetHeaAsync(object parameter)
         {
             string selectedGroup = (string)parameter;
@@ -215,6 +259,11 @@ namespace wpfProjectNewsReader.ViewModel
                 toBePosted += s + "\n";
             }
             Article = toBePosted;
+        }
+
+        private async void PostArticleToGroup()
+        {
+
         }
     }
 }

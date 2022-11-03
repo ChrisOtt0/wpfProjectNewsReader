@@ -34,6 +34,11 @@ namespace wpfProjectNewsReader.View
 
         private void ListBoxItem_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
+            ((MainMenuViewModel)DataContext).GetHeadlines.Execute(((ListBoxItem)sender).Content);
+        }
+
+        private void ListBoxItem_MouseDoubleClickPost(object sender, MouseButtonEventArgs e)
+        {
             ((MainMenuViewModel)DataContext).SelectGroup.Execute(((ListBoxItem)sender).Content);
         }
     }
