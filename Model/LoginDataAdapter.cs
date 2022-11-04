@@ -28,6 +28,8 @@ namespace wpfProjectNewsReader.Model
         {
             string data = $"{ld.UserName}\n{ld.Password}\n{ld.ServerName}\n{ld.ServerPort}";
             string encryptedData = SecurityTools.EncryptString(data, pin);
+            if (File.Exists(conf))
+                DeleteData();
             File.WriteAllTextAsync(conf, encryptedData);
         }
 
