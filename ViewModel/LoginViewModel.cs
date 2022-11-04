@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
+using System.Reflection.Metadata;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -22,7 +24,7 @@ namespace wpfProjectNewsReader.ViewModel
         {
             get => client.ServerName;
             set
-            {
+                {
                 client.ServerName = value;
                 OnPropertyChanged();
             }
@@ -43,6 +45,7 @@ namespace wpfProjectNewsReader.ViewModel
         private string username = "";
         private string connectionLabel = "";
         private SessionSingleton session = SessionSingleton.GetInstance();
+        private ILoginDataAdapter lda;
 
         public string Username
         {
@@ -68,8 +71,12 @@ namespace wpfProjectNewsReader.ViewModel
 
         public LoginViewModel()
         {
+            lda = new LoginDataAdapter();
             LoginCommand = new AddCommand(LoginAttempt);
             client = NntpClientSingleton.GetInstance();
+
+            if (lda.ConfExists())
+                AutoLogin();
         }
 
         #region Commands
@@ -98,9 +105,62 @@ namespace wpfProjectNewsReader.ViewModel
                 return;
             }
 
-            // ASK TO SAVE WITH PIN? //
+            var pinDialog = new SaveSessionPrompt();
+            if (pinDialog.ShowDialog() == true)
+            {
+                lda.SaveData(new LoginData(username, (parameter as PasswordBox).Password, ServerName, ServerPort.ToString()), session.Pin);
+                session.Pin = SecurityTools.HashString((parameter as PasswordBox).Password);
+            }
+            else
+            {
+                session.Pin = SecurityTools.HashString((parameter as PasswordBox).Password);
+            }
+
             ((App)App.Current).ChangeUserControl(App.container.Resolve<MainMenuView>());
         }
         #endregion
+
+        private async void AutoLogin()
+        {
+            LoginData ld = null;
+            var pinDialog = new OpenSavedSessionPrompt();
+            if (pinDialog.ShowDialog() == false)
+                return;
+
+            ld = lda.RetrieveData(session.Pin);
+            session.Pin = SecurityTools.HashString(ld.Password);
+
+            if (ld.IsEmpty())
+            {
+                MessageBox.Show("Saved login data corrupted.");
+                lda.DeleteData();
+                return;
+            }
+
+            Username = ld.UserName;
+            ServerName = ld.ServerName;
+            ServerPort = int.Parse(ld.ServerPort);
+
+            ConnectionLabel = "Connecting...";
+            InternalResponse ir = await client.OpenConnectionAsync();
+            bool res = ir.Response.ContainsKey(true);
+
+            if (!res)
+            {
+                ConnectionLabel = ir.Response[false];
+                return;
+            }
+
+            ir = await client.LoginAsync(Username, ld.Password);
+            res = ir.Response.ContainsKey(true);
+
+            if (!res)
+            {
+                ConnectionLabel = ir.Response[false];
+                return;
+            }
+
+            ((App)App.Current).ChangeUserControl(App.container.Resolve<MainMenuView>());
+        }
     }
 }

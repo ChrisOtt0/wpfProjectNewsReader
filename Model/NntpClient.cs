@@ -19,7 +19,7 @@ namespace wpfProjectNewsReader.Model
         #region Fields
         private static NntpClientSingleton? instance = null;
         private string serverName = "";
-        private int serverPort = 119;
+        private int serverPort;
         TcpClient? socket = null;
         Stream stream = null;
         NntpStreamReader? reader = null;
@@ -49,7 +49,10 @@ namespace wpfProjectNewsReader.Model
         #endregion
 
         #region Constructor
-        private NntpClientSingleton() { }
+        private NntpClientSingleton()
+        {
+            serverPort = 119;
+        }
         #endregion
 
         #region GetInstance

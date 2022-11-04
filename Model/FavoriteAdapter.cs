@@ -4,15 +4,17 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using wpfProjectNewsReader.Tools;
 
 namespace wpfProjectNewsReader.Model
 {
-    public class FavoriteManager
+    public class FavoriteAdapter : IFavoriteAdapter
     {
+        SessionSingleton session = SessionSingleton.GetInstance();
         FileAdapter fileAdapter = new TxtFile();
         string? currentUser = null;
 
-        public FavoriteManager(string user)
+        public FavoriteAdapter(string user)
         {
             currentUser = user;
         }
@@ -30,7 +32,9 @@ namespace wpfProjectNewsReader.Model
                 "\\Documents\\NewsReader\\Groups\\" + 
                 SecurityTools.HashString(currentUser) + ".txt";
 
-            fileAdapter.WriteTextToFile(path, text);
+            string encryptedText = SecurityTools.EncryptString(text, session.Pin);
+
+            fileAdapter.WriteTextToFile(path, encryptedText);
         }
 
         public IEnumerable<string> LoadFavorites()
@@ -42,7 +46,10 @@ namespace wpfProjectNewsReader.Model
             if (!File.Exists(path)) yield break;
 
             string text = fileAdapter.GetAllTextFromFile(path);
-            string[] lines = text.Split('\n');
+
+            string decryptedText = SecurityTools.DecryptString(text, session.Pin);
+
+            string[] lines = decryptedText.Split('\n');
 
             foreach (string line in lines)
             {

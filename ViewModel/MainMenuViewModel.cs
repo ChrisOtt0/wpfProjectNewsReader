@@ -26,7 +26,7 @@ namespace wpfProjectNewsReader.ViewModel
         private int? currentArticleNumber = null;
         private string? article = null;
         private SessionSingleton session = SessionSingleton.GetInstance();
-        private FavoriteManager favMan = null;
+        private IFavoriteAdapter favAdapter = null;
         private string post = "";
         private string from = "";
         private string subject = "";
@@ -69,7 +69,8 @@ namespace wpfProjectNewsReader.ViewModel
             {
                 if (SearchText == null || SearchText == "") return AllGroups;
 
-                return new ObservableCollection<string>(AllGroups.Where(x => x.ToUpper().StartsWith(SearchText.ToUpper())));
+                return new ObservableCollection<string>(AllGroups.Where(x => x.ToUpper().Contains(SearchText.ToUpper()) ||
+                x.ToUpper().StartsWith(SearchText.ToUpper())));
             }
         }
 
@@ -144,8 +145,8 @@ namespace wpfProjectNewsReader.ViewModel
             DownloadGroups = new AddCommand(DownloadAllGroups);
             GetHeadlines = new AddCommand(SelectGroupAndGetHeadLines);
             PostArticle = new AddCommand(PostArticleToGroup);
-            favMan = new FavoriteManager(session.Username);
-            favorites = new ObservableCollection<string>(favMan.LoadFavorites());
+            favAdapter = new FavoriteAdapter(session.Username);
+            favorites = new ObservableCollection<string>(favAdapter.LoadFavorites());
             Initialize();
         }
 
@@ -198,7 +199,7 @@ namespace wpfProjectNewsReader.ViewModel
 
             filteredBox.UnselectAll();
 
-            favMan.SaveFavorites(favorites);
+            favAdapter.SaveFavorites(favorites);
         }
 
         private void RemoveSelectedFromFavorites(object parameter)
@@ -215,7 +216,7 @@ namespace wpfProjectNewsReader.ViewModel
 
             favBox.UnselectAll();
 
-            favMan.SaveFavorites(favorites);
+            favAdapter.SaveFavorites(favorites);
         }
 
         private void SelectGroupAndGetHeadLines(object parameter)

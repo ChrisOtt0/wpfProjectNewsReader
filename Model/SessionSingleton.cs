@@ -10,6 +10,9 @@ namespace wpfProjectNewsReader.Model
     {
         private static SessionSingleton? instance;
         private string? username = "";
+        private string? pin = "";
+
+        public string? Pin { get => pin; set => pin = value; }
 
         public string? Username { get => username; set => username = value; }
 

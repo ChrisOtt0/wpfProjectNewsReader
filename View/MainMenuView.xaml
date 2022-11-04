@@ -8,7 +8,8 @@
              d:DesignHeight="900" d:DesignWidth="1500">
     <Grid
         Background="#2b2e3b">
-        <TabControl Background="#989cb3" Margin="20">
+        <TabControl Background="#989cb3" Margin="20"
+                    Grid.Row="1">
             <TabControl.Resources>
                 <Style TargetType="TabItem">
                     <Setter Property="Template">

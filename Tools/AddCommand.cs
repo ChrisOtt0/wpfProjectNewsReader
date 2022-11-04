@@ -10,7 +10,8 @@ namespace wpfProjectNewsReader.Tools
     public class AddCommand : ICommand
     {
         public event EventHandler? CanExecuteChanged;
-        private Action<Object>? actionToInvokePar = null;
+        private Action<Object> actionToInvokePar = null;
+        private Action<Object, Object> actionToInvokePar2 = null;
         private Action actionToInvoke = null;
 
         public bool CanExecute(object? parameter)
@@ -21,15 +22,28 @@ namespace wpfProjectNewsReader.Tools
             if (actionToInvokePar != null)
                 return true;
 
+            if (actionToInvokePar2 != null)
+                return true;
+
             return false;
         }
 
-        public void Execute(object? parameter)
+        public void Execute()
         {
-            if (actionToInvokePar != null)
-                this.actionToInvokePar(parameter);
             if (actionToInvoke != null)
                 this.actionToInvoke();
+        }
+
+        public void Execute(Object p)
+        {
+            if (actionToInvokePar != null)
+                this.actionToInvokePar(p);
+        }
+
+        public void Execute(Object p1, Object p2)
+        {
+            if (actionToInvokePar2 != null)
+                this.actionToInvokePar2(p1, p2);
         }
 
         public AddCommand(Action<Object> actionToInvoke)
@@ -42,5 +56,9 @@ namespace wpfProjectNewsReader.Tools
             this.actionToInvoke = actionToInvoke;
         }
 
+        public AddCommand(Action<Object, Object> actionToInvoke)
+        {
+            this.actionToInvokePar2 = actionToInvoke;
+        }
     }
 }
